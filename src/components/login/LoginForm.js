@@ -33,12 +33,12 @@ const LoginForm = () => {
     setRegisterData({...registerData, [name]: value});
   };
 
-  const registerTeamHandler = (event) => {
+  const registerTeamHandler = async (event) => {
     event.preventDefault();
     const {email, teamName} = registerData;
     if (isValidEmail(email) && isValidTeamName(teamName)) {
-      registerTeam(registerData);
-      history.push('/play');
+      const teamId = await registerTeam(registerData);
+      history.push('/play/' + teamId);
     } else {
       alert('Do better with your team name & email!');
     }

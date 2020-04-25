@@ -1,8 +1,7 @@
 import firebase from '../Firebase';
 
-const registerTeam = ({teamName, email}) => {
-  console.log('adding')
-  firebase.firestore()
+const registerTeam = async ({teamName, email}) => {
+  const ref = await firebase.firestore()
     .collection('teams')
     .add({
       email: email,
@@ -11,7 +10,7 @@ const registerTeam = ({teamName, email}) => {
     .catch((err) => {
       console.warn('Error saving new team to db', err);
     });
-
+    return ref.id;
 };
 
 
