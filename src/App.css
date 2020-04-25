@@ -1,4 +1,4 @@
-.App {
+.app {
   /*text-align: center;*/
   display: flex;
   flex-direction: column;
@@ -31,5 +31,10 @@
 
 .signup-form {
   border: 1px solid blue;
+}
+
+.test {
+  padding: 20px;
+  border: 1px solid red;
 }
 
