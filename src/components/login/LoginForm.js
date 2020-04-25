@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {Button, TextField, Select, MenuItem, FormControl, InputLabel, Typography} from '@material-ui/core';
 import firebase from '../../Firebase';
+import {useHistory} from 'react-router-dom';
 import registerTeam from '../../services/RegisterTeam';
 
 
@@ -8,6 +9,7 @@ const LoginForm = () => {
   const [teamSelectOptions, setTeamSelectOptions] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState('');
   const [registerData, setRegisterData] = useState({teamName: '', email: ''});
+  const history = useHistory();
 
   useEffect(() => {
     const unsubscribe = firebase.firestore().collection('teams')
@@ -37,7 +39,9 @@ const LoginForm = () => {
 
     // add team
     registerTeam(registerData);
-    console.log('finsihed sending form data')
+
+    // redirect to play page
+    history.push('/play');
   };
 
   return (
