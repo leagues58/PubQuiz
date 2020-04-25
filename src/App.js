@@ -1,15 +1,18 @@
 import React from 'react';
-import Header from './components/login/Header';
-import LoginForm from './components/login/LoginForm';
+import {Switch, Route} from 'react-router-dom';
 
+import SignIn from './pages/SignIn';
+import Play from './pages/Play';
+import Cockpit from './pages/Cockpit';
 
 
 const App = () => {
   return (
-    <div>
-      <Header />
-      <LoginForm />
-    </div>
+    <Switch>
+      <Route exact path='/' component={SignIn} />
+      <Route path='/play' component={Play} />
+      <Route path='/cockpit' component={Cockpit} />
+    </Switch>
   );
 }
 
