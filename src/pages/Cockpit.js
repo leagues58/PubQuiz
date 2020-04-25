@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import getAllQuestions from '../services/GetAllQuestions';
 
 
 const TeamList = () => {
@@ -13,11 +14,26 @@ const TeamList = () => {
 };
 
 const QuestionList = () => {
+  const [questions, setQuestions] = useState([]);
+
+  useEffect(() => {
+    const getQuestions = async () => {
+      const data = await getAllQuestions();
+      if (data) {
+        setQuestions(data);
+      }
+    };
+
+    getQuestions();
+  }, [])
   return (
     <div>
       <h3>Question List</h3>
       <ul>
-        <li>Question 1</li>
+        {questions.map((question) => {
+          return (<li key={question.id}>{question.question} - {question.isOpen.toString()}</li>);
+
+        })}
       </ul>
     </div>
   );
