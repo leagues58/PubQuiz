@@ -3,6 +3,7 @@ import {Button, TextField, Select, MenuItem, FormControl, InputLabel, Typography
 import firebase from '../../Firebase';
 import {useHistory} from 'react-router-dom';
 import registerTeam from '../../services/RegisterTeam';
+import {isValidEmail, isValidTeamName} from '../../utils/CheckForValidRegisterInput';
 
 
 const LoginForm = () => {
@@ -34,14 +35,14 @@ const LoginForm = () => {
 
   const registerTeamHandler = (event) => {
     event.preventDefault();
-    console.log('sending form data')
-    // validate input here
+    const {email, teamName} = registerData;
+    if (isValidEmail(email) && isValidTeamName(teamName)) {
+      registerTeam(registerData);
+      history.push('/play');
+    } else {
+      alert('Do better with your team name & email!');
+    }
 
-    // add team
-    registerTeam(registerData);
-
-    // redirect to play page
-    history.push('/play');
   };
 
   return (
