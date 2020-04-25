@@ -49,7 +49,7 @@ const LoginForm = () => {
   };
 
   const joinTeamHandler = () => {
-    if (selectedTeam != '') {
+    if (selectedTeam !== '') {
       history.push('/play/' + selectedTeam);
     } else {
       alert('You neede to choose a team to join first!');
