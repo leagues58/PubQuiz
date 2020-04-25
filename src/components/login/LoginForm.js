@@ -33,6 +33,10 @@ const LoginForm = () => {
     setRegisterData({...registerData, [name]: value});
   };
 
+  const handleTeamSelect = (event) => {
+    setSelectedTeam(event.target.value);
+  };
+
   const registerTeamHandler = async (event) => {
     event.preventDefault();
     const {email, teamName} = registerData;
@@ -42,7 +46,14 @@ const LoginForm = () => {
     } else {
       alert('Do better with your team name & email!');
     }
+  };
 
+  const joinTeamHandler = () => {
+    if (selectedTeam != '') {
+      history.push('/play/' + selectedTeam);
+    } else {
+      alert('You neede to choose a team to join first!');
+    }
   };
 
   return (
@@ -61,12 +72,12 @@ const LoginForm = () => {
         <form>
           <FormControl>
             <InputLabel>team</InputLabel>
-          <Select id='team-select' value={selectedTeam}>
+          <Select id='team-select' value={selectedTeam} onChange={handleTeamSelect}>
             {teamSelectOptions.map((team) => {
               return (<MenuItem value={team.id} key={team.id}>{team.teamName}</MenuItem>);
             })}
           </Select>
-          <Button variant='contained'>join your team!</Button>
+          <Button variant='contained' onClick={joinTeamHandler}>join your team!</Button>
           </FormControl>
         </form>
       </div>
