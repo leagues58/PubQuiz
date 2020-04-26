@@ -10,11 +10,13 @@ import {
   ExpansionPanelDetails, 
   TextField,
   List, ListItem, ListItemText,
-  AppBar, Tabs, Tab
+  AppBar, Tabs, Tab,
+  Switch
 } from '@material-ui/core/';
 import TabPanel from '../components/TabPanel';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import changeQuestionState from '../services/ChangeQuestionState';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
 
 const TeamList = ({teams}) => {
   return (
-    <div>
+    <div style={{display: 'flex', flexDirection:'column', width:'90vw'}}>
       <h3>Team List</h3>
       <List component="nav" aria-label="main mailbox folders">
         {teams.map((team) => {
@@ -54,9 +56,13 @@ const QuestionList = ({teams, questions}) => {
     }
   };
 
+  const handleOpenSwitchChange = (questionId, state) => {
+    changeQuestionState(questionId, state);
+  };
+
   return (
-    <div>
-      <div>
+    <div style={{display: 'flex', flexDirection:'column', width:'90vw'}}>
+      <div style={{display: 'flex', flexDirection:'row', justifyContent:'space-between'}}>
         <h3>Question List </h3>
         <Fab color="primary" aria-label="add" onClick={addQuestionHandler}>
           <AddIcon />
@@ -69,6 +75,8 @@ const QuestionList = ({teams, questions}) => {
               expandIcon={<ExpandMoreIcon />}
               aria-controls="panel1a-content" >
               <Typography className={classes.heading}>{index+1}. {question.question} {question.isOpen ? '(Open)' : '(Closed)'}</Typography>
+              <Switch checked={question.isOpen} onChange={() => {handleOpenSwitchChange(question.id, !question.isOpen)}} name="checkedB" color="primary" /> 
+
             </ExpansionPanelSummary>
             {question.answers?.map((answer) => {
               return (
@@ -142,21 +150,21 @@ const Cockpit = () => {
   };
 
   return (
-    <div>
+    <div style={{display: 'flex', flexDirection: 'column', alignItems:'flex-start', padding: '20px'}}>
       <AppBar position="static">
         <Tabs value={index} onChange={handleTabChange} aria-label="simple tabs example">
-          <Tab label="Teams" {...a11yProps(0)} />
-          <Tab label="Questions/Answers" {...a11yProps(1)} />
+          <Tab label="Questions/Answers" {...a11yProps(0)} />
+          <Tab label="Teams" {...a11yProps(1)} />
         </Tabs>
       </AppBar>
 
       <TabPanel value={index} index={0}>
         <h1>Cockpit</h1>
-        <TeamList teams={teams}/>
+        <QuestionList teams={teams} questions={questions} />
       </TabPanel>
       <TabPanel value={index} index={1}>
         <h1>Cockpit</h1>
-        <QuestionList teams={teams} questions={questions} />
+        <TeamList teams={teams}/>
       </TabPanel>
     </div>
   );
