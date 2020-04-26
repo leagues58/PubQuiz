@@ -7,12 +7,20 @@ import submitAnswer from '../services/SubmitAnswer';
 
 const Question = ({children}) => {
   
-  return (
-    <div>
-      <h2>Question:</h2>
-      {children}
-    </div>
-  );
+  if (children) {
+    return (
+      <div>
+        <h2>Question:</h2>
+        {children}
+      </div>
+    );
+  } else {
+    return (
+      <div>
+        <h2>No questions available</h2>
+      </div>
+    );
+  }
 };
 
 const AnswerArea = ({question, teamId}) => {
@@ -33,7 +41,7 @@ const AnswerArea = ({question, teamId}) => {
   };
 
   useEffect(() => {
-    if (question?.answers.filter(q => q.teamId === teamId).length > 0) {
+    if (question?.answers?.filter(q => q.teamId === teamId).length > 0) {
       setAnswerSubmitted(true);
     } else {
       setAnswerSubmitted(false);
@@ -41,19 +49,25 @@ const AnswerArea = ({question, teamId}) => {
   }, [question]);
 
 
-  return (
-    <div>
-      <TextField
-        id="outlined-multiline-static"
-        multiline
-        rows={4}
-        variant="outlined"
-        onChange={answerChangeHandler}
-        disabled={answerSubmitted}
-      />
-      <Button variant='contained' onClick={answerSubmit} disabled={answerSubmitted}>submit your answer</Button>
-    </div>
-  );
+  if (question) {
+    return (
+      <div>
+        <TextField
+          id="outlined-multiline-static"
+          multiline
+          rows={4}
+          variant="outlined"
+          onChange={answerChangeHandler}
+          disabled={answerSubmitted}
+        />
+        <Button variant='contained' onClick={answerSubmit} disabled={answerSubmitted}>submit your answer</Button>
+      </div>
+    );
+  } else {
+    return (
+      <div></div>
+    );
+  }
 };
 
 
@@ -61,17 +75,6 @@ const Play = () => {
   const {id} = useParams();
   const [teamData, setTeamData] = useState({});
   const [questions, setQuestions] = useState([]);
-
-  useEffect(() => {
-    const getTeamInfo = async () => {
-      const doc = await getTeam(id);
-      if (doc) {
-        setTeamData(doc);
-      }
-    };
-
-    getTeamInfo();
-  }, []);
 
   useEffect(() => {
     const getTeamInfo = async () => {
