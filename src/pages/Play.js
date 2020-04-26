@@ -2,14 +2,14 @@ import React, {useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
 import getTeam from '../services/GetTeam';
 import firebase from '../Firebase';
-import {TextField, Button} from '@material-ui/core';
+import {TextField, Button, AppBar, Paper} from '@material-ui/core';
 import submitAnswer from '../services/SubmitAnswer';
 
 const Question = ({children}) => {
   
   if (children) {
     return (
-      <div>
+      <div style={{marginTop: '2vh'}}>
         <h2>Question:</h2>
         {children}
       </div>
@@ -70,6 +70,23 @@ const AnswerArea = ({question, teamId}) => {
   }
 };
 
+const QuestionList = ({questions, teamId}) => {
+  return (
+    <div>
+      <h3>Question List</h3>
+      <ol>
+      {questions.map((question) => {
+        const answer = question.answers?.find(a => a.teamId === teamId);
+
+        return (
+          <li>{question.question}{answer ? `: ${answer.answer} (${answer.points ? answer.points : '-'} pts)` : null}</li>
+        );
+      })}
+      </ol>
+    </div>
+  );
+}
+
 
 const Play = () => {
   const {id} = useParams();
@@ -108,14 +125,17 @@ const Play = () => {
 
 
   return (
-    <div>
-      <h3>Now playing the Pub Quiz!</h3>
-      <h4>{id}</h4>
-      <h4>Welcome team {teamData?.teamName}</h4>
-      <h4>{JSON.stringify(teamData)}</h4>
-      <h4>{JSON.stringify(questions)}</h4>
+    <div style={{padding: '20px'}}>
+      <AppBar position="static">
+        <span style={{padding: '10px', fontSize:'1.2em', fontWeight: 'bold'}}>Stillwater Pub Quiz - {teamData?.teamName}</span>
+      </AppBar>
+      <Paper elevation={3} style={{padding: '10px', marginTop: '3vh'}}>
       <Question>{questions.find(q => q.isOpen)?.question}</Question>
       <AnswerArea question={questions.find(q => q.isOpen)} teamId={id}/>
+      </Paper>
+      <Paper elevation={3} style={{padding: '10px', marginTop: '3vh'}}>
+      <QuestionList questions={questions} teamId={id} />
+      </Paper>
     </div>
   );
 };
