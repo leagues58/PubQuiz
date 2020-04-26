@@ -15,8 +15,9 @@ const Question = ({children}) => {
   );
 };
 
-const AnswerArea = ({questionId, teamId}) => {
+const AnswerArea = ({question, teamId}) => {
   const [answer, setAnswer] = useState('');
+  const [answerSubmitted, setAnswerSubmitted] = useState(false);
   const answerSubmit = () => {
     if (answer === '') {
       const confirmEmpty = alert('Are you sure you want to submit an empty answer?');
@@ -24,12 +25,21 @@ const AnswerArea = ({questionId, teamId}) => {
         return false;
       }
     }
-    submitAnswer(answer, questionId, teamId);
+    submitAnswer(answer, question.id, teamId);
   };
 
   const answerChangeHandler = (event) => {
     setAnswer(event.target.value);
   };
+
+  useEffect(() => {
+    if (question?.answers.filter(q => q.teamId === teamId).length > 0) {
+      setAnswerSubmitted(true);
+    } else {
+      setAnswerSubmitted(false);
+    }
+  }, [question]);
+
 
   return (
     <div>
@@ -39,8 +49,9 @@ const AnswerArea = ({questionId, teamId}) => {
         rows={4}
         variant="outlined"
         onChange={answerChangeHandler}
+        disabled={answerSubmitted}
       />
-      <Button variant='contained' onClick={answerSubmit}>submit your answer</Button>
+      <Button variant='contained' onClick={answerSubmit} disabled={answerSubmitted}>submit your answer</Button>
     </div>
   );
 };
@@ -101,7 +112,7 @@ const Play = () => {
       <h4>{JSON.stringify(teamData)}</h4>
       <h4>{JSON.stringify(questions)}</h4>
       <Question>{questions.find(q => q.isOpen)?.question}</Question>
-      <AnswerArea questionId={questions.find(q => q.isOpen)?.id} teamId={id}/>
+      <AnswerArea question={questions.find(q => q.isOpen)} teamId={id}/>
     </div>
   );
 };
