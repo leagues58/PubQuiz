@@ -56,7 +56,12 @@ const QuestionList = ({teams, questions}) => {
 
   return (
     <div>
-      <h3>Question List </h3>
+      <div>
+        <h3>Question List </h3>
+        <Fab color="primary" aria-label="add" onClick={addQuestionHandler}>
+          <AddIcon />
+        </Fab>
+      </div>
       {questions.map((question, index) => {
         return (
           <ExpansionPanel key={question.id}>
@@ -76,10 +81,6 @@ const QuestionList = ({teams, questions}) => {
           </ExpansionPanel>
         );
       })}
-
-      <Fab color="primary" aria-label="add" onClick={addQuestionHandler}>
-        <AddIcon />
-      </Fab>
     </div>
   );
 };
