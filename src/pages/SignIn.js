@@ -5,7 +5,7 @@ import LoginForm from '../components/login/LoginForm';
 const SignIn = () => {
   //document.body.style = 'background: #282c34';
   return (
-    <div style={{display: 'flex', flexDirection: 'column', alignItems:'center', marginTop:'10vh'}}>
+    <div style={{display: 'flex', flexDirection: 'column',  marginTop:'5vh'}}>
       <Header />
       <LoginForm />
     </div>

@@ -4,8 +4,9 @@ import {Typography} from '@material-ui/core';
 
 const Header = () => {
   return (
-    <div style={{dispaly: 'flex',}}>
-      <Typography variant="h4">Welcome to the (Virtual) Stillwater Pub Quiz!</Typography>
+    <div style={{display: 'flex', flexDirection:'column', alignItems:'center'}}>
+      <img src={'/logo.png'} alt="Logo" style={{width:'30vw', marginBottom:'5vh'}} />
+      <Typography variant="h4">Stillwater Pub Quiz (now Virtual)!</Typography>
     </div>
   );
 };
