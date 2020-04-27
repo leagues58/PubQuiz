@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Button, TextField, Select, MenuItem, FormControl, InputLabel, Typography} from '@material-ui/core';
+import {Button, TextField, Select, MenuItem, FormControl, InputLabel, Typography, Paper} from '@material-ui/core';
 import firebase from '../../Firebase';
 import {useHistory} from 'react-router-dom';
 import registerTeam from '../../services/RegisterTeam';
@@ -57,19 +57,22 @@ const LoginForm = () => {
   };
 
   return (
-    <div>
-      <div className='register-form'>
+    <div style={{display: 'flex', flexDirection: 'column', alignItems:'center', justifyContent:'center', marginTop:'5vh'}}>
+      <div className='register-form' >
+        <Paper elevation={3} style={{padding: '20px', width:'80vw'}}>
         <p>to form a new team, enter a team name and email</p>
-        <form onSubmit={registerTeamHandler}>
-          <TextField label='team name' name='teamName' onChange={handleFormChange} />
-            <TextField label='email address' name='email' onChange={handleFormChange}/>
-            <input type="submit" value="Submit" />
+        <form style={{display: 'flex', flexDirection: 'column', justifyContent:'space-around', marginTop:'1vh'}}>
+          <TextField label='team name' name='teamName' onChange={handleFormChange} style={{marginTop: '3vw'}} />
+          <TextField label='email address' name='email' onChange={handleFormChange} style={{marginTop: '3vw'}} />
+          <Button variant='contained' onClick={registerTeamHandler} style={{marginTop: '3vw'}} color='primary'>register a new team!</Button>
         </form>
+        </Paper>
       </div>
-      <div><Typography> - or - </Typography></div>
+      <div style={{marginTop:'3vh', marginBottom:'3vh'}}><Typography> - or - </Typography></div>
       <div className='join-form'>
+        <Paper elevation={5} style={{padding: '20px', width:'80vw'}}>
         <Typography>join an existing team</Typography>
-        <form>
+        <form style={{display: 'flex', flexDirection: 'column', justifyContent:'center', marginTop:'1vh'}}>
           <FormControl>
             <InputLabel>team</InputLabel>
           <Select id='team-select' value={selectedTeam} onChange={handleTeamSelect}>
@@ -77,9 +80,10 @@ const LoginForm = () => {
               return (<MenuItem value={team.id} key={team.id}>{team.teamName}</MenuItem>);
             })}
           </Select>
-          <Button variant='contained' onClick={joinTeamHandler}>join your team!</Button>
+          <Button variant='contained' onClick={joinTeamHandler} style={{marginTop: '3vw'}} color='primary'>join your team!</Button>
           </FormControl>
         </form>
+        </Paper>
       </div>
     </div>
   );
