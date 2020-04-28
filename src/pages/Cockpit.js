@@ -142,7 +142,7 @@ const QuestionList = ({teams, questions}) => {
             <ExpansionPanelSummary
               expandIcon={<ExpandMoreIcon />}
               aria-controls="panel1a-content" >
-              <Typography className={classes.heading}>{index+1}. {question.question} {question.isOpen ? '(Open)' : '(Closed)'}</Typography>
+              <Typography className={classes.heading}>{index+1}. {question.question} {`(${question.answers.length} responses)`} </Typography>
               <Switch checked={question.isOpen} onChange={() => {handleOpenSwitchChange(question.id, !question.isOpen)}} name="checkedB" color="primary" /> 
 
             </ExpansionPanelSummary>
@@ -233,7 +233,7 @@ const Cockpit = () => {
   };
 
   return (
-    <div style={{display: 'flex', flexDirection: 'column', alignItems:'flex-start', padding: '20px'}}>
+    <div style={{display: 'flex', flexDirection: 'column', alignItems:'flex-start', padding: '20px', backgroundColor:'lightgray'}}>
       <AppBar position="static">
         <Tabs value={index} onChange={handleTabChange} aria-label="simple tabs example">
           <Tab label="Questions/Answers" {...a11yProps(0)} />
