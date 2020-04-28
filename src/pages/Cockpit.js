@@ -38,24 +38,30 @@ const useStyles = makeStyles((theme) => ({
 
 
 const GameSummary = ({teams, questions}) => {
-  let teamTotals = {};
+  let teamTotals = [];
   const classes = useStyles();
   const teamIds = teams.map((team) => team.id);
 
   const getAnswers = (question) => {
     let result = [];
     
-    teamIds.forEach(teamId => {
+    teamIds.forEach((teamId, index) => {
       let points = question.answers?.find(a => a.teamId === teamId)?.points;
-      console.log(points)
+      if (points === undefined) {
+        points = null;
+      }
       result.push(points);
-      let currentPoints = teamTotals[teamId] ? teamTotals[teamId] : 0;
-      teamTotals = {...teamTotals, [teamId]: currentPoints + points ? points : 0}
+      let currentPoints = teamTotals[index] ? teamTotals[index] : 0;
+      teamTotals[index] = currentPoints + Number(points);
     });
-    
-    console.log('totals: ' + JSON.stringify(teamTotals))
+
     return result;
   };
+
+  useEffect(() => {
+    let sortedTotals = teamTotals.sort((a, b) => (a < b) ? 1 : -1);
+    console.log('sorted totals: ' + JSON.stringify(sortedTotals))
+  }, [teamTotals]);
 
 
   return (
@@ -91,9 +97,9 @@ const GameSummary = ({teams, questions}) => {
               <TableCell component="th" scope="row">
                 <b>Total</b>
               </TableCell>
-              {Object.keys(teamTotals).map(total => {
+              {teamTotals.map(total => {
                 return (
-                  <TableCell align="right">{teamTotals[total]}</TableCell>
+                  <TableCell align="right">{total}</TableCell>
                 );
               })}
             </TableRow>
