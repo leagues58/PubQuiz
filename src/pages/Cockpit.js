@@ -150,7 +150,7 @@ const QuestionList = ({teams, questions}) => {
               return (
                 <ExpansionPanelDetails key={answer.teamId + question.id}>
                   <div><b>{teams.find(t => t.id === answer.teamId).teamName}:</b> <i>{answer.answer}</i></div>
-                  <TextField value={answer.points} style={{width:'50px', marginLeft:'20px'}} onChange={(event) => assignPoints(event.target.value, answer.teamId, question.id)}></TextField> pts
+                  <TextField value={answer.points} style={{width:'50px', marginLeft:'20px'}} onChange={(event) => assignPoints(event.target.value, answer.teamId, question.id)}></TextField> <div style={{color: answer.points ? 'green' : 'red'}}>pts</div>
                 </ExpansionPanelDetails>
               );
             })}

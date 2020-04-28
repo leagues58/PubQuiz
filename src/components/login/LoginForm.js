@@ -57,7 +57,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div style={{display: 'flex', flexDirection: 'column', alignItems:'center', justifyContent:'center', marginTop:'2vh'}}>
+    <div style={{display: 'flex', flexDirection: 'column', alignItems:'center', justifyContent:'center', marginTop:'2vh', marginBottom:'25vh'}}>
       <div className='register-form' >
         <Paper elevation={3} style={{padding: '20px', width:'65vmin'}}>
         <form style={{display: 'flex', flexDirection: 'column', justifyContent:'space-around'}}>
