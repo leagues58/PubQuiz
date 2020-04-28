@@ -60,7 +60,6 @@ const GameSummary = ({teams, questions}) => {
 
   useEffect(() => {
     let sortedTotals = teamTotals.sort((a, b) => (a < b) ? 1 : -1);
-    console.log('sorted totals: ' + JSON.stringify(sortedTotals))
   }, [teamTotals]);
 
 

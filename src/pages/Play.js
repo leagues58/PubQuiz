@@ -65,7 +65,7 @@ const AnswerArea = ({question, teamId}) => {
           disabled={answerSubmitted}
           value={answer}
         />
-        <Button variant='contained' onClick={answerSubmit} disabled={answerSubmitted} style={{marginTop:'1vh'}}>submit your answer</Button>
+        <Button variant='contained' color='primary' onClick={answerSubmit} disabled={answerSubmitted} style={{marginTop:'1vh'}}>submit your answer</Button>
       </div>
     );
   } else {
@@ -94,7 +94,8 @@ const QuestionList = ({questions, teamId}) => {
         if (question.answers) {
           const answer = question.answers?.find(a => a.teamId === teamId);
           return (
-            <li style={{padding: '10px'}}><b>{question.question}</b><br/><i>{answer ? ` ${answer.answer} (${answer.points ? answer.points : '-'} pts)` : null}</i></li>
+            <li style={{padding: '10px'}}><b>{question.question}</b><br/><i>{answer ? ` ${answer.answer} (${answer.points ? answer.points : '-'} pts)` : null}</i><hr/></li>
+            
           );
         } else {
           return null;
@@ -145,7 +146,7 @@ const Play = () => {
 
 
   return (
-    <div style={{display:'flex', flexDirection:'column', alignItems:'center', padding: '20px'}}>
+    <div style={{display:'flex', flexDirection:'column', alignItems:'center', padding: '20px', backgroundColor:'lightgray', paddingBottom:'10%'}}>
       <AppBar position="static">
         <span style={{padding: '10px', fontSize:'1.2em', fontWeight: 'bold'}}>Stillwater Pub Quiz - {teamData?.teamName}</span>
       </AppBar>

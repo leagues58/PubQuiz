@@ -6,7 +6,7 @@ import Background from '../bulb.jpg';
 const SignIn = () => {
   //document.body.style = 'background: #282c34';
   return (
-    <div style={{flexDirection: 'column', backgroundImage:`url(${Background})`, height: '100%', border:'1px solid red'}}>
+    <div style={{display: 'flex', flexDirection: 'column', backgroundImage:`url(${Background})`}}>
       <Header />
       <LoginForm />
     </div>
