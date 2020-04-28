@@ -112,6 +112,7 @@ const Play = () => {
   const {id} = useParams();
   const [teamData, setTeamData] = useState({});
   const [questions, setQuestions] = useState([]);
+  const [answers, setAnswers] = useState([]);
 
   useEffect(() => {
     const getTeamInfo = async () => {
@@ -144,12 +145,34 @@ const Play = () => {
     return () => unsubscribeCallback();
   }, []);
 
+  useEffect(() => {
+    const unsubscribeCallback = firebase.firestore()
+    .collection('answers')
+    .where('teamId', '==', id)
+    .onSnapshot((snapshot) => {
+      const answersArr = [];
+      snapshot.forEach((doc) => {
+        answersArr.push({
+          id: doc.id, 
+          teamId: doc.data().teamId,
+          questionId: doc.data().questionId,
+          answer: doc.data().answer,
+          dateAdded: doc.data().dateAdded
+        });
+      });
+      setAnswers(answersArr);
+    });
+
+    return () => unsubscribeCallback();
+  }, [teamData]);
+
 
   return (
     <div style={{display:'flex', flexDirection:'column', alignItems:'center', padding: '20px', backgroundColor:'lightgray', paddingBottom:'10%'}}>
       <AppBar position="static">
         <span style={{padding: '10px', fontSize:'1.2em', fontWeight: 'bold'}}>Stillwater Pub Quiz - {teamData?.teamName}</span>
       </AppBar>
+      {JSON.stringify(answers)}
       <Paper elevation={3} style={{display:'flex', flexDirection:'column', padding: '10px', marginTop: '3vh', width:'90%'}}>
         <Question>{questions.find(q => q.isOpen)?.question}</Question>
         <AnswerArea question={questions.find(q => q.isOpen)} teamId={id}/>
