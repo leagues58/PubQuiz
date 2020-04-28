@@ -9,7 +9,7 @@ const Question = ({children}) => {
   
   if (children) {
     return (
-      <div style={{marginTop: '2vh'}}>
+      <div style={{display: 'flex', flexDirection: 'column', marginTop: '2vh', width:'100%'}}>
         <h2>Question:</h2>
         {children}
       </div>
@@ -26,12 +26,11 @@ const Question = ({children}) => {
 const AnswerArea = ({question, teamId}) => {
   const [answer, setAnswer] = useState('');
   const [answerSubmitted, setAnswerSubmitted] = useState(false);
+  const [currentQuestionId, setCurrentQuestionId] = useState(0);
   const answerSubmit = () => {
     if (answer === '') {
-      const confirmEmpty = alert('Are you sure you want to submit an empty answer?');
-      if (!confirmEmpty) {
-        return false;
-      }
+      alert('You gotta put something!');
+      return false;
     }
     submitAnswer(answer, question.id, teamId);
   };
@@ -46,12 +45,17 @@ const AnswerArea = ({question, teamId}) => {
     } else {
       setAnswerSubmitted(false);
     }
+
+    if (question?.id !== currentQuestionId) {
+      setAnswer('');
+      setCurrentQuestionId(question?.id);
+    }
   }, [question]);
 
 
   if (question) {
     return (
-      <div>
+      <div style={{display: 'flex',flexDirection:'column', marginTop:'2vh'}}>
         <TextField
           id="outlined-multiline-static"
           multiline
@@ -59,8 +63,9 @@ const AnswerArea = ({question, teamId}) => {
           variant="outlined"
           onChange={answerChangeHandler}
           disabled={answerSubmitted}
+          value={answer}
         />
-        <Button variant='contained' onClick={answerSubmit} disabled={answerSubmitted}>submit your answer</Button>
+        <Button variant='contained' onClick={answerSubmit} disabled={answerSubmitted} style={{marginTop:'1vh'}}>submit your answer</Button>
       </div>
     );
   } else {
@@ -71,16 +76,30 @@ const AnswerArea = ({question, teamId}) => {
 };
 
 const QuestionList = ({questions, teamId}) => {
+  let score = 0;
+  questions.forEach(question => {
+    if (question.answers) {
+      question.answers.forEach(answer => {
+        if (answer.teamId === teamId) {
+          score += answer.points ? Number(answer.points) : 0;
+        }
+      });
+    }
+  });
   return (
     <div>
-      <h3>Question List</h3>
+      <h3>Score Card ({score} pts)</h3>
       <ol>
       {questions.map((question) => {
-        const answer = question.answers?.find(a => a.teamId === teamId);
+        if (question.answers) {
+          const answer = question.answers?.find(a => a.teamId === teamId);
+          return (
+            <li style={{padding: '10px'}}><b>{question.question}</b><br/><i>{answer ? ` ${answer.answer} (${answer.points ? answer.points : '-'} pts)` : null}</i></li>
+          );
+        } else {
+          return null;
+        }
 
-        return (
-          <li>{question.question}{answer ? `: ${answer.answer} (${answer.points ? answer.points : '-'} pts)` : null}</li>
-        );
       })}
       </ol>
     </div>
@@ -108,16 +127,17 @@ const Play = () => {
     const unsubscribeCallback = firebase.firestore()
     .collection('questions')
     .onSnapshot((snapshot) => {
-      const questions = [];
+      const questionsArr = [];
       snapshot.forEach((doc) => {
-        questions.push({
+        questionsArr.push({
           id: doc.id, 
           question: doc.data().question, 
           isOpen: doc.data().open,
-          answers: doc.data().answers
+          answers: doc.data().answers,
+          dateAdded: doc.data().dateAdded
         });
       });
-      setQuestions(questions);
+      setQuestions(questionsArr.sort((a, b) => (a.dateAdded > b.dateAdded) ? 1 : -1));
     });
 
     return () => unsubscribeCallback();
@@ -125,16 +145,16 @@ const Play = () => {
 
 
   return (
-    <div style={{padding: '20px'}}>
+    <div style={{display:'flex', flexDirection:'column', alignItems:'center', padding: '20px'}}>
       <AppBar position="static">
         <span style={{padding: '10px', fontSize:'1.2em', fontWeight: 'bold'}}>Stillwater Pub Quiz - {teamData?.teamName}</span>
       </AppBar>
-      <Paper elevation={3} style={{padding: '10px', marginTop: '3vh'}}>
-      <Question>{questions.find(q => q.isOpen)?.question}</Question>
-      <AnswerArea question={questions.find(q => q.isOpen)} teamId={id}/>
+      <Paper elevation={3} style={{display:'flex', flexDirection:'column', padding: '10px', marginTop: '3vh', width:'90%'}}>
+        <Question>{questions.find(q => q.isOpen)?.question}</Question>
+        <AnswerArea question={questions.find(q => q.isOpen)} teamId={id}/>
       </Paper>
-      <Paper elevation={3} style={{padding: '10px', marginTop: '3vh'}}>
-      <QuestionList questions={questions} teamId={id} />
+      <Paper elevation={3} style={{display:'flex', flexDirection:'column', padding: '10px', marginTop: '3vh', width:'90%'}}>
+        <QuestionList questions={questions} teamId={id} />
       </Paper>
     </div>
   );

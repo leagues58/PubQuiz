@@ -59,7 +59,7 @@ const LoginForm = () => {
   return (
     <div style={{display: 'flex', flexDirection: 'column', alignItems:'center', justifyContent:'center', marginTop:'2vh'}}>
       <div className='register-form' >
-        <Paper elevation={3} style={{padding: '20px', width:'60vw'}}>
+        <Paper elevation={3} style={{padding: '20px', width:'65vmin'}}>
         <form style={{display: 'flex', flexDirection: 'column', justifyContent:'space-around'}}>
           <div>to form a new team, enter a team name and email</div>
           <TextField label='team name' name='teamName' onChange={handleFormChange} style={{marginTop: '3vw'}} />
@@ -70,7 +70,7 @@ const LoginForm = () => {
       </div>
       <div style={{marginTop:'3vh', marginBottom:'3vh'}}><Typography variant='h4'> - or - </Typography></div>
       <div className='join-form'>
-        <Paper elevation={5} style={{padding: '20px', width:'60vw'}}>
+        <Paper elevation={5} style={{padding: '20px', width:'65vmin'}}>
         <Typography>join an existing team</Typography>
         <form style={{display: 'flex', flexDirection: 'column', justifyContent:'center', marginTop:'1vh'}}>
           <FormControl>

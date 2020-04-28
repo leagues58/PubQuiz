@@ -2,7 +2,7 @@ import firebase from '../Firebase';
 
 const submitAnswer = async (answer, questionId, teamId) => {
   const answerObj = {answer, teamId}
-  const ref = await firebase.firestore()
+  await firebase.firestore()
     .collection('questions')
     .doc(questionId)
     .update({

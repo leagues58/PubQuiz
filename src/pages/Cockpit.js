@@ -17,6 +17,14 @@ import TabPanel from '../components/TabPanel';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import changeQuestionState from '../services/ChangeQuestionState';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+import changeAnswerPoints from '../services/ChangeAnswerPoints';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,19 +37,69 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const TeamList = ({teams}) => {
+const GameSummary = ({teams, questions}) => {
+  let teamTotals = {};
+  const classes = useStyles();
+  const teamIds = teams.map((team) => team.id);
+
+  const getAnswers = (question) => {
+    let result = [];
+    
+    teamIds.forEach(teamId => {
+      let points = question.answers?.find(a => a.teamId === teamId)?.points;
+      console.log(points)
+      result.push(points);
+      let currentPoints = teamTotals[teamId] ? teamTotals[teamId] : 0;
+      teamTotals = {...teamTotals, [teamId]: currentPoints + points ? points : 0}
+    });
+    
+    console.log('totals: ' + JSON.stringify(teamTotals))
+    return result;
+  };
+
+
   return (
     <div style={{display: 'flex', flexDirection:'column', width:'90vw'}}>
       <h3>Team List</h3>
-      <List component="nav" aria-label="main mailbox folders">
-        {teams.map((team) => {
-          return (
-            <ListItem button key={team.teamId}>
-              <ListItemText primary={team.teamName} secondary={team.email}  />
-            </ListItem>
-          );
-        })}
-      </List>
+      <TableContainer component={Paper}>
+      <Table className={classes.table} aria-label="simple table">
+        <TableHead>
+          <TableRow>
+            <TableCell>Question</TableCell>
+            {teams.map(team => {
+              return (
+                <TableCell align="right">{team.teamName}</TableCell>
+              );
+            })}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {questions.map((question, index) => {
+            const answerSet = getAnswers(question)
+            return (
+            <TableRow key={question.id}>
+              <TableCell component="th" scope="row">
+                {index+1}.
+              </TableCell>
+              {answerSet.map((cell, index) => {
+                return (<TableCell align="right">{cell}</TableCell>);
+              })}
+            </TableRow>
+            );
+          })}
+          <TableRow>
+              <TableCell component="th" scope="row">
+                <b>Total</b>
+              </TableCell>
+              {Object.keys(teamTotals).map(total => {
+                return (
+                  <TableCell align="right">{teamTotals[total]}</TableCell>
+                );
+              })}
+            </TableRow>
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 };
@@ -58,6 +116,10 @@ const QuestionList = ({teams, questions}) => {
 
   const handleOpenSwitchChange = (questionId, state) => {
     changeQuestionState(questionId, state);
+  };
+
+  const assignPoints = async (pointValue, teamId, questionId) => {
+    await changeAnswerPoints(pointValue, teamId, questionId);
   };
 
   return (
@@ -81,14 +143,28 @@ const QuestionList = ({teams, questions}) => {
             {question.answers?.map((answer) => {
               return (
                 <ExpansionPanelDetails key={answer.teamId + question.id}>
-                  <Typography>{teams.find(t => t.id === answer.teamId).teamName}: {answer.answer}</Typography>
-                  <TextField></TextField>
+                  <div><b>{teams.find(t => t.id === answer.teamId).teamName}:</b> <i>{answer.answer}</i></div>
+                  <TextField value={answer.points} style={{width:'50px', marginLeft:'20px'}} onChange={(event) => assignPoints(event.target.value, answer.teamId, question.id)}></TextField> pts
                 </ExpansionPanelDetails>
               );
             })}
           </ExpansionPanel>
         );
       })}
+    </div>
+  );
+};
+
+const TeamList = ({teams}) => {
+  return (
+    <div>
+      <ol>
+        {teams.map((team) => {
+          return (
+            <li style={{padding:'10px'}}><b>{team.teamName}</b><br/><i>{team.email}</i></li>
+          );
+        })}
+      </ol>
     </div>
   );
 };
@@ -134,10 +210,11 @@ const Cockpit = () => {
           id: doc.id, 
           question: doc.data().question, 
           isOpen: doc.data().open,
-          answers: doc.data().answers
+          answers: doc.data().answers,
+          dateAdded: doc.data().dateAdded
         });
       });
-      setQuestions(questions);
+      setQuestions(questions.sort((a, b) => (a.dateAdded > b.dateAdded) ? 1 : -1));
     });
 
     return () => unsubscribeCallback();
@@ -154,17 +231,20 @@ const Cockpit = () => {
       <AppBar position="static">
         <Tabs value={index} onChange={handleTabChange} aria-label="simple tabs example">
           <Tab label="Questions/Answers" {...a11yProps(0)} />
-          <Tab label="Teams" {...a11yProps(1)} />
+          <Tab label="Game Summary" {...a11yProps(1)} />
+          <Tab label={`Teams (${teams.length}) `} {...a11yProps(2)} />
         </Tabs>
       </AppBar>
 
       <TabPanel value={index} index={0}>
-        <h1>Cockpit</h1>
         <QuestionList teams={teams} questions={questions} />
       </TabPanel>
       <TabPanel value={index} index={1}>
-        <h1>Cockpit</h1>
-        <TeamList teams={teams}/>
+        <GameSummary teams={teams} questions={questions}/>
+      </TabPanel>
+      <TabPanel value={index} index={2}>
+        <h1>Teams</h1>
+        <TeamList teams={teams} />
       </TabPanel>
     </div>
   );
