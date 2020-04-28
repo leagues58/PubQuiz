@@ -24,3 +24,8 @@ yarn-error.log*
 
 # real firebase configs
 FireBaseConfig.js
+
+#firebase hosting
+firebase.json
+.firebaserc
+.firebase/*
