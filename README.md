@@ -1,3 +1,4 @@
+# Pub Quiz! 
 React app made hastily over a weekend so that we can play online trivia.  App allows for admins to add questions, open and close said
 questions for answering, and assign points to answers submitted.  Admins can view teams, answers, and game summaries. Users can join or
 create new teams, view and answer the open questions, and can see their scores.  
