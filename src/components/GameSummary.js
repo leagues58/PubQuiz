@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect} from 'react';
 import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper} from '@material-ui/core/';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -21,7 +21,9 @@ const GameSummary = ({teams, questions, answers}) => {
     let result = [];
     
     teamIds.forEach((teamId, index) => {
+      console.log('running once')
       let points = answers?.find(a => a.teamId === teamId && a.questionId === question.id)?.points;
+      console.log(points)
       if (points === undefined) {
         points = null;
       }
@@ -40,7 +42,7 @@ const GameSummary = ({teams, questions, answers}) => {
 
   return (
     <div style={{display: 'flex', flexDirection:'column', width:'90vw'}}>
-      <h3>Team List</h3>
+      <h3>Game Summary</h3>
       <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="simple table">
         <TableHead>

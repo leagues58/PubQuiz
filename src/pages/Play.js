@@ -6,11 +6,13 @@ import {AppBar, Paper} from '@material-ui/core';
 import ScoreCard from '../components/ScoreCard';
 import Question from '../components/Question';
 import AnswerArea from '../components/AnswerArea';
+import GameSummary from '../components/GameSummary';
 
 
 const Play = () => {
   const {id} = useParams();
   const [teamData, setTeamData] = useState({});
+  const [teams, setTeams] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
 
@@ -18,7 +20,7 @@ const Play = () => {
     const getTeamInfo = async () => {
       const doc = await getTeam(id);
       if (doc) {
-        setTeamData(doc);
+        setTeamData({...doc, id});
       }
     };
 
@@ -50,7 +52,7 @@ const Play = () => {
   useEffect(() => {
     const unsubscribeCallback = firebase.firestore()
     .collection('answers')
-    .where('teamId', '==', id)
+    //.where('teamId', '==', id)
     .onSnapshot((snapshot) => {
       const answersArr = [];
       snapshot.forEach((doc) => {
@@ -67,6 +69,24 @@ const Play = () => {
     return () => unsubscribeCallback();
   }, []);
 
+  useEffect(() => {
+    const unsubscribeCallback = firebase.firestore()
+    .collection('teams')
+    .onSnapshot((snapshot) => {
+      const teams = [];
+      snapshot.forEach((doc) => {
+        teams.push({
+          id: doc.id, 
+          teamName: doc.data().teamName,
+          email: doc.data().email
+        });
+      });
+      setTeams(teams);
+    });
+
+    return () => unsubscribeCallback();
+  }, []);
+
   return (
     <div style={{display:'flex', flexDirection:'column', alignItems:'center', padding: '20px', backgroundColor:'lightgray', paddingBottom:'10%'}}>
       <AppBar position="static">
@@ -74,11 +94,12 @@ const Play = () => {
       </AppBar>
       <Paper elevation={3} style={{display:'flex', flexDirection:'column', padding: '10px', marginTop: '3vh', width:'90%'}}>
         <Question number={questions.find(q => q.isOpen)?.questionNumber}/>
-        <AnswerArea question={questions.find(q => q.isOpen)} teamId={id} answers={answers}/>
+        <AnswerArea question={questions.find(q => q.isOpen)} teamId={id} answers={answers.filter(a => a.teamId === id)}/>
       </Paper>
       <Paper elevation={3} style={{display:'flex', flexDirection:'column', padding: '10px', marginTop: '3vh', width:'90%'}}>
-        <ScoreCard questions={questions} answers={answers} />
+        <ScoreCard questions={questions} answers={answers.filter(a => a.teamId === id)} />
       </Paper>
+      <GameSummary teams={teams} questions={questions} answers={answers} />
     </div>
   );
 };
