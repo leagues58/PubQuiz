@@ -14,7 +14,7 @@ const ScoreCard = ({questions, answers}) => {
       {questions.map((question) => {
         const answer = answers.find(a => a.questionId === question.id);
         return (
-          <li style={{padding: '10px'}}>{answer?.answer}: {answer?.points} points<hr/></li>
+          <li style={{padding: '10px'}}>{answer?.answer} {answer?.points ? `: ${answer.points} points` : ``}<hr/></li>
         );
       })}
       </ol>
