@@ -20,7 +20,7 @@ const AnswerArea = ({question, teamId, answers}) => {
   };
 
   useEffect(() => {
-    let submittedAnswer = answers?.find(a => a.questionId === question.id);
+    let submittedAnswer = answers?.find(a => a.questionId === question?.id);
     if (submittedAnswer) {
       setAnswerSubmitted(true);
       if (question?.id !== currentQuestionId) {
@@ -32,6 +32,15 @@ const AnswerArea = ({question, teamId, answers}) => {
     }
 
   }, [answers]);
+
+  useEffect(() => {
+    let submittedAnswer = answers?.find(a => a.questionId === question?.id);
+    if (submittedAnswer) {
+      setAnswer(submittedAnswer.answer);
+    } else {
+      setAnswer('');
+    }
+  }, [question])
 
 
   if (question) {
