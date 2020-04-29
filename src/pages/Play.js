@@ -99,7 +99,9 @@ const Play = () => {
       <Paper elevation={3} style={{display:'flex', flexDirection:'column', padding: '10px', marginTop: '3vh', width:'90%'}}>
         <ScoreCard questions={questions} answers={answers.filter(a => a.teamId === id)} />
       </Paper>
-      <GameSummary teams={teams} questions={questions} answers={answers} />
+      <Paper elevation={3} style={{display:'flex', flexDirection:'column', padding: '10px', marginTop: '3vh', width:'90%'}}>
+        <GameSummary teams={teams} questions={questions} answers={answers} />
+      </Paper>
     </div>
   );
 };

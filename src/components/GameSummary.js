@@ -41,7 +41,7 @@ const GameSummary = ({teams, questions, answers}) => {
 
 
   return (
-    <div style={{display: 'flex', flexDirection:'column', width:'90vw'}}>
+    <div style={{display: 'flex', flexDirection:'column', width:'99%'}}>
       <h3>Game Summary</h3>
       <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="simple table">
