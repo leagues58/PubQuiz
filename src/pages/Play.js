@@ -4,6 +4,7 @@ import getTeam from '../services/GetTeam';
 import firebase from '../Firebase';
 import {TextField, Button, AppBar, Paper} from '@material-ui/core';
 import submitAnswer from '../services/SubmitAnswer';
+import ScoreCard from '../components/ScoreCard';
 
 const Question = ({number}) => {
   
@@ -73,27 +74,6 @@ const AnswerArea = ({question, teamId}) => {
     );
   }
 };
-
-const QuestionList = ({questions, answers}) => {
-  let score = 0;
-  answers.forEach(answer => {
-    if (answer.points) {
-      score += answer.points;
-    }
-  });
-  return (
-    <div>
-      <h3>Score Card ({score} pts)</h3>
-      <ol>
-      {questions.map((question) => {
-        return (
-          <li style={{padding: '10px'}}><b>{question.questionNumber}</b><br/><i>test</i><hr/></li>
-        );
-      })}
-      </ol>
-    </div>
-  );
-}
 
 
 const Play = () => {
@@ -168,7 +148,7 @@ const Play = () => {
         <AnswerArea question={questions.find(q => q.isOpen)} teamId={id}/>
       </Paper>
       <Paper elevation={3} style={{display:'flex', flexDirection:'column', padding: '10px', marginTop: '3vh', width:'90%'}}>
-        <QuestionList questions={questions} answers={answers} />
+        <ScoreCard questions={questions} answers={answers} />
       </Paper>
     </div>
   );
