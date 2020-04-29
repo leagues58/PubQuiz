@@ -3,13 +3,14 @@ import {Button, TextField, Select, MenuItem, FormControl, InputLabel, Typography
 import firebase from '../../Firebase';
 import {useHistory} from 'react-router-dom';
 import registerTeam from '../../services/RegisterTeam';
-import {isValidEmail, isValidTeamName} from '../../utils/CheckForValidRegisterInput';
+import {validateRegistration, defaultValidationObject} from '../../utils/CheckForValidRegisterInput';
 
 
 const LoginForm = () => {
   const [teamSelectOptions, setTeamSelectOptions] = useState([]);
-  const [selectedTeam, setSelectedTeam] = useState('');
-  const [registerData, setRegisterData] = useState({teamName: '', email: ''});
+  const [joinData, setJoinData] = useState({});
+  const [registerData, setRegisterData] = useState({teamName: '', email: '', password: ''});
+  const [registrationErrors, setRegistrationErrors] = useState(defaultValidationObject);
   const history = useHistory();
 
   useEffect(() => {
@@ -17,8 +18,7 @@ const LoginForm = () => {
     .onSnapshot((snapshot) => {
       let teams = [];
       snapshot.forEach((doc) => {
-        console.log(doc.id, '=>', doc.data());
-        teams.push({id: doc.id, teamName: doc.data().teamName});
+        teams.push({id: doc.id, teamName: doc.data().teamName, password: doc.data().password});
       });
       setTeamSelectOptions(teams);
     });
@@ -26,33 +26,52 @@ const LoginForm = () => {
     return () => unsubscribe();
   }, []);
 
-  const handleFormChange = (event) => {
+  const handleRegisterFormChange = (event) => {
     const target = event.target;
     const value = target.value;
     const name = target.name;
     setRegisterData({...registerData, [name]: value});
   };
 
-  const handleTeamSelect = (event) => {
-    setSelectedTeam(event.target.value);
+  const handleJoinFormChange = (event) => {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    setJoinData({...joinData, [name]: value});
   };
 
   const registerTeamHandler = async (event) => {
     event.preventDefault();
-    const {email, teamName} = registerData;
-    if (isValidEmail(email) && isValidTeamName(teamName)) {
+    
+    const registerValidation = validateRegistration(registerData);
+    
+   if (!registerValidation.teamNameError && !registerValidation.emailError && !registerValidation.passwordError) {
       const teamId = await registerTeam(registerData);
       history.push('/play/' + teamId);
     } else {
-      alert('Do better with your team name & email!');
+      setRegistrationErrors(registerValidation);
     }
   };
 
+  const signUserInToTeam = (data) => {
+    if (!data.selectedTeam || data.selectedTeam === '') {
+      return false;
+    }
+
+    if (data.password != teamSelectOptions.find(t => t.id === data.selectedTeam).password) {
+      return false;
+    }
+
+    return true;
+
+  };
+
   const joinTeamHandler = () => {
-    if (selectedTeam !== '') {
-      history.push('/play/' + selectedTeam);
+    const signIn = signUserInToTeam(joinData)
+    if (signIn) {
+      history.push('/play/' + joinData.selectedTeam);
     } else {
-      alert('You neede to choose a team to join first!');
+      alert('Password is incorrect.');
     }
   };
 
@@ -61,8 +80,9 @@ const LoginForm = () => {
         <Paper elevation={3} style={{padding: '30px', width:'65vmin', margin: '20px'}}>
           <form style={{display: 'flex', flexDirection: 'column', justifyContent:'space-around'}}>
             <div>to form a new team, enter a team name and email:</div>
-            <TextField label='team name' name='teamName' onChange={handleFormChange} style={{marginTop: '3vw'}} />
-            <TextField label='email address' name='email' onChange={handleFormChange} style={{marginTop: '3vw'}} />
+            <TextField label='team name' name='teamName' onChange={handleRegisterFormChange} style={{marginTop: '2vw'}} error={registrationErrors.teamNameError} helperText={registrationErrors.teamNameHelperText} />
+            <TextField label='email address' name='email' onChange={handleRegisterFormChange} style={{marginTop: '2vw'}} error={registrationErrors.emailError} helperText={registrationErrors.emailHelperText} />
+            <TextField type="password" label='team password' name='password' onChange={handleRegisterFormChange} style={{marginTop: '2vw'}} error={registrationErrors.passwordError} helperText={registrationErrors.passwordHelperText} />
             <Button variant='contained' onClick={registerTeamHandler} style={{marginTop: '3vw'}} color='primary'>register a new team!</Button>
           </form>
         </Paper>
@@ -71,12 +91,13 @@ const LoginForm = () => {
             <Typography>or, join an existing team:</Typography>
             <FormControl>
               <InputLabel>team</InputLabel>
-            <Select id='team-select' value={selectedTeam} onChange={handleTeamSelect}>
-              {teamSelectOptions.map((team) => {
-                return (<MenuItem value={team.id} key={team.id}>{team.teamName}</MenuItem>);
-              })}
-            </Select>
-            <Button variant='contained' onClick={joinTeamHandler} style={{marginTop: '3vw'}} color='primary'>join your team!</Button>
+              <Select name='selectedTeam' onChange={handleJoinFormChange}>
+                {teamSelectOptions.map((team) => {
+                  return (<MenuItem value={team.id} key={team.id}>{team.teamName}</MenuItem>);
+                })}
+              </Select>
+              <TextField type="password" label='team password' name='password' onChange={handleJoinFormChange} style={{marginTop: '2vw'}} />
+              <Button variant='contained' onClick={joinTeamHandler} style={{marginTop: '3vw'}} color='primary'>join your team!</Button>
             </FormControl>
           </form>
         </Paper>
