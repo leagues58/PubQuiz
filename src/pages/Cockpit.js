@@ -1,9 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import firebase from '../Firebase';
-import {AppBar, Tabs, Tab} from '@material-ui/core/';
+import {AppBar, Tabs, Tab, Button} from '@material-ui/core/';
 import TabPanel from '../components/TabPanel';
 import QuestionList from '../components/QuestionList';
 import GameSummary from '../components/GameSummary';
+import removeData from '../services/RemoveDataSet';
 
 
 const TeamList = ({teams}) => {
@@ -37,13 +38,15 @@ const Cockpit = () => {
   useEffect(() => {
     const unsubscribeCallback = firebase.firestore()
     .collection('teams')
+    .orderBy('number', 'asc')
     .onSnapshot((snapshot) => {
       const teams = [];
       snapshot.forEach((doc) => {
         teams.push({
           id: doc.id, 
           teamName: doc.data().teamName,
-          email: doc.data().email
+          email: doc.data().email,
+          number: doc.data().number
         });
       });
       setTeams(teams);
@@ -98,6 +101,17 @@ const Cockpit = () => {
     setTabIndex(index);
   };
 
+  const handleRemoveAnswers = (dataSetName) => {
+    const confirm = window.confirm('Are you sure? This will remove all the ' + dataSetName + ' data.');
+    if (confirm) {
+      if (removeData(dataSetName)) {
+        alert(`${dataSetName} removed.`);
+      } else {
+        alert(`Unable to delete ${dataSetName}.`);
+      }
+    }
+  }
+
   return (
     <div style={{display: 'flex', flexDirection: 'column', alignItems:'flex-start', padding: '20px', backgroundColor:'lightgray'}}>
       <AppBar position="static">
@@ -105,6 +119,7 @@ const Cockpit = () => {
           <Tab label="Questions/Answers" {...a11yProps(0)} />
           <Tab label="Game Summary" {...a11yProps(1)} />
           <Tab label={`Teams (${teams.length}) `} {...a11yProps(2)} />
+          <Tab label='Settings' {...a11yProps(3)} />
         </Tabs>
       </AppBar>
 
@@ -117,6 +132,14 @@ const Cockpit = () => {
       <TabPanel value={index} index={2}>
         <h1>Teams</h1>
         <TeamList teams={teams} />
+      </TabPanel>
+      <TabPanel value={index} index={3}>
+        <h1>Settings</h1>
+        <div style={{display: 'flex', flexDirection:'column'}}>
+          <Button variant='contained' onClick={() => {handleRemoveAnswers('teams')}} style={{marginTop: '3vw'}} color='primary'>Clear Teams</Button>
+          <Button variant='contained' onClick={() => handleRemoveAnswers('answers')} style={{marginTop: '3vw'}} color='primary'>Clear Answers</Button>
+          <Button variant='contained' onClick={() => {handleRemoveAnswers('questions')}} style={{marginTop: '3vw'}} color='primary'>Clear Questions</Button>
+        </div>
       </TabPanel>
     </div>
   );

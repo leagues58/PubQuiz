@@ -27,10 +27,7 @@ const QuestionList = ({teams, questions, answers}) => {
   const classes = useStyles();
 
   const addQuestionHandler = () => {
-    const questionText = prompt('Add a question: ');
-    if (questionText) {
-      addQuestion(questionText);
-    }
+    addQuestion(`question#${questions.length+1}`, questions.length+1, false);
   };
 
   const handleOpenSwitchChange = (questionId, state) => {

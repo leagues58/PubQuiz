@@ -5,7 +5,7 @@ const changeQuestionState = (questionId, state) => {
       let batch = firebase.firestore().batch();
       resp.docs.forEach(userDocRef => {
         if (userDocRef.id === questionId) {
-          batch.update(userDocRef.ref, {isOpen: state});
+          batch.update(userDocRef.ref, {isOpen: state, wasAsked: true});
         }else {
           batch.update(userDocRef.ref, {isOpen: false});
         }

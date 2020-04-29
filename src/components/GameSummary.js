@@ -50,7 +50,7 @@ const GameSummary = ({teams, questions, answers}) => {
             <TableCell>Question</TableCell>
             {teams.map(team => {
               return (
-                <TableCell align="right">{team.teamName}</TableCell>
+                <TableCell align="right">({team.number}) {team.teamName}</TableCell>
               );
             })}
           </TableRow>

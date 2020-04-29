@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useParams} from 'react-router-dom';
+import {useParams, useHistory} from 'react-router-dom';
 import getTeam from '../services/GetTeam';
 import firebase from '../Firebase';
 import {AppBar, Paper} from '@material-ui/core';
@@ -15,12 +15,15 @@ const Play = () => {
   const [teams, setTeams] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
+  const history = useHistory();
 
   useEffect(() => {
     const getTeamInfo = async () => {
       const doc = await getTeam(id);
       if (doc) {
         setTeamData({...doc, id});
+      } else {
+        history.push('/');
       }
     };
 
@@ -72,13 +75,15 @@ const Play = () => {
   useEffect(() => {
     const unsubscribeCallback = firebase.firestore()
     .collection('teams')
+    .orderBy('number', 'asc')
     .onSnapshot((snapshot) => {
       const teams = [];
       snapshot.forEach((doc) => {
         teams.push({
           id: doc.id, 
           teamName: doc.data().teamName,
-          email: doc.data().email
+          email: doc.data().email,
+          number: doc.data().number
         });
       });
       setTeams(teams);
@@ -90,7 +95,7 @@ const Play = () => {
   return (
     <div style={{display:'flex', flexDirection:'column', alignItems:'center', padding: '20px', backgroundColor:'lightgray', paddingBottom:'10%'}}>
       <AppBar position="static">
-        <span style={{padding: '10px', fontSize:'1.2em', fontWeight: 'bold'}}>Stillwater Pub Quiz - {teamData?.teamName}</span>
+        <span style={{padding: '10px', fontSize:'1.2em', fontWeight: 'bold'}}>Stillwater Pub Quiz - {teamData?.teamName} (team #{teamData.number})</span>
       </AppBar>
       <Paper elevation={3} style={{display:'flex', flexDirection:'column', padding: '10px', marginTop: '3vh', width:'90%'}}>
         <Question number={questions.find(q => q.isOpen)?.questionNumber}/>

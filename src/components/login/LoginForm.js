@@ -46,7 +46,7 @@ const LoginForm = () => {
     const registerValidation = validateRegistration(registerData);
     
    if (!registerValidation.teamNameError && !registerValidation.emailError && !registerValidation.passwordError) {
-      const teamId = await registerTeam(registerData);
+      const teamId = await registerTeam({...registerData, number: teamSelectOptions.length + 1});
       history.push('/play/' + teamId);
     } else {
       setRegistrationErrors(registerValidation);
@@ -86,6 +86,7 @@ const LoginForm = () => {
             <Button variant='contained' onClick={registerTeamHandler} style={{marginTop: '3vw'}} color='primary'>register a new team!</Button>
           </form>
         </Paper>
+        {teamSelectOptions.length &&
         <Paper elevation={3} style={{padding: '30px', width:'65vmin', margin: '20px'}}>
           <form style={{display: 'flex', flexDirection: 'column', marginTop:'1vh', width:'100%'}}>
             <Typography>or, join an existing team:</Typography>
@@ -100,7 +101,7 @@ const LoginForm = () => {
               <Button variant='contained' onClick={joinTeamHandler} style={{marginTop: '3vw'}} color='primary'>join your team!</Button>
             </FormControl>
           </form>
-        </Paper>
+        </Paper>}
     </div>
   );
 };
