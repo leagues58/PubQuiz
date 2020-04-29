@@ -5,13 +5,12 @@ import firebase from '../Firebase';
 import {TextField, Button, AppBar, Paper} from '@material-ui/core';
 import submitAnswer from '../services/SubmitAnswer';
 
-const Question = ({children}) => {
+const Question = ({number}) => {
   
-  if (children) {
+  if (number) {
     return (
       <div style={{display: 'flex', flexDirection: 'column', marginTop: '2vh', width:'100%'}}>
-        <h2>Question:</h2>
-        {children}
+        <h2>Question #{number}</h2>
       </div>
     );
   } else {
@@ -75,15 +74,11 @@ const AnswerArea = ({question, teamId}) => {
   }
 };
 
-const QuestionList = ({questions, teamId}) => {
+const QuestionList = ({questions, answers}) => {
   let score = 0;
-  questions.forEach(question => {
-    if (question.answers) {
-      question.answers.forEach(answer => {
-        if (answer.teamId === teamId) {
-          score += answer.points ? Number(answer.points) : 0;
-        }
-      });
+  answers.forEach(answer => {
+    if (answer.points) {
+      score += answer.points;
     }
   });
   return (
@@ -91,16 +86,9 @@ const QuestionList = ({questions, teamId}) => {
       <h3>Score Card ({score} pts)</h3>
       <ol>
       {questions.map((question) => {
-        if (question.answers) {
-          const answer = question.answers?.find(a => a.teamId === teamId);
-          return (
-            <li style={{padding: '10px'}}><b>{question.question}</b><br/><i>{answer ? ` ${answer.answer} (${answer.points ? answer.points : '-'} pts)` : null}</i><hr/></li>
-            
-          );
-        } else {
-          return null;
-        }
-
+        return (
+          <li style={{padding: '10px'}}><b>{question.questionNumber}</b><br/><i>test</i><hr/></li>
+        );
       })}
       </ol>
     </div>
@@ -112,6 +100,7 @@ const Play = () => {
   const {id} = useParams();
   const [teamData, setTeamData] = useState({});
   const [questions, setQuestions] = useState([]);
+  const [answers, setAnswers] = useState([]);
 
   useEffect(() => {
     const getTeamInfo = async () => {
@@ -127,35 +116,59 @@ const Play = () => {
   useEffect(() => {
     const unsubscribeCallback = firebase.firestore()
     .collection('questions')
+    .where('wasAsked', '==', true)
     .onSnapshot((snapshot) => {
       const questionsArr = [];
       snapshot.forEach((doc) => {
         questionsArr.push({
           id: doc.id, 
           question: doc.data().question, 
-          isOpen: doc.data().open,
-          answers: doc.data().answers,
-          dateAdded: doc.data().dateAdded
+          isOpen: doc.data().isOpen,
+          isFinalQuestion: doc.data().isFinalQuestion,
+          questionNumber: doc.data().questionNumber,
+          wasAsked: doc.data().wasAsked
         });
       });
-      setQuestions(questionsArr.sort((a, b) => (a.dateAdded > b.dateAdded) ? 1 : -1));
+      setQuestions(questionsArr.sort((a, b) => (a.questionNumber > b.questionNumber) ? 1 : -1));
     });
 
     return () => unsubscribeCallback();
   }, []);
 
+  useEffect(() => {
+    const unsubscribeCallback = firebase.firestore()
+    .collection('answers')
+    .where('teamId', '==', id)
+    .onSnapshot((snapshot) => {
+      const answersArr = [];
+      snapshot.forEach((doc) => {
+        answersArr.push({
+          id: doc.id, 
+          questionId: doc.data().questionId,
+          teamId: doc.data().teamId,
+          answer: doc.data().answer,
+          points: doc.data().points
+        });
+      });
+      setAnswers(answersArr);
+    });
+    return () => unsubscribeCallback();
+  }, []);
 
   return (
     <div style={{display:'flex', flexDirection:'column', alignItems:'center', padding: '20px', backgroundColor:'lightgray', paddingBottom:'10%'}}>
+      {JSON.stringify(questions)}
+      <br/><br/>
+      {JSON.stringify(answers)}
       <AppBar position="static">
         <span style={{padding: '10px', fontSize:'1.2em', fontWeight: 'bold'}}>Stillwater Pub Quiz - {teamData?.teamName}</span>
       </AppBar>
       <Paper elevation={3} style={{display:'flex', flexDirection:'column', padding: '10px', marginTop: '3vh', width:'90%'}}>
-        <Question>{questions.find(q => q.isOpen)?.question}</Question>
+        <Question number={questions.find(q => q.isOpen)?.questionNumber}/>
         <AnswerArea question={questions.find(q => q.isOpen)} teamId={id}/>
       </Paper>
       <Paper elevation={3} style={{display:'flex', flexDirection:'column', padding: '10px', marginTop: '3vh', width:'90%'}}>
-        <QuestionList questions={questions} teamId={id} />
+        <QuestionList questions={questions} answers={answers} />
       </Paper>
     </div>
   );
