@@ -35,7 +35,10 @@ const QuestionList = ({teams, questions, answers}) => {
   };
 
   const assignPoints = async (pointValue, answerId) => {
-    await changeAnswerPoints(pointValue, answerId);
+    console.log('pointsvalue: ' + pointValue, Number.isInteger(Number(pointValue)))
+
+      await changeAnswerPoints(pointValue, answerId);
+    
   };
 
   return (
@@ -48,6 +51,7 @@ const QuestionList = ({teams, questions, answers}) => {
       </div>
       {questions.map((question) => {
         const questionAnswers = answers.filter(a => a.questionId === question.id);
+        if (!question.isFinalQuestion) {
         return (
           <ExpansionPanel key={question.id}>
             <ExpansionPanelSummary
@@ -67,6 +71,36 @@ const QuestionList = ({teams, questions, answers}) => {
             })}
           </ExpansionPanel>
         );
+        } else {
+          let finalAnswers = [];
+          console.log('finals a' + JSON.stringify(questionAnswers))
+          teams.forEach(team => {
+            finalAnswers.push({
+              teamName: team.teamName, 
+              wager: questionAnswers.find(a => a.isWager && a.teamId === team.id)?.answer, 
+              answer: questionAnswers.find(a => !a.isWager && a.teamId === team.id)?.answer,
+              points: questionAnswers.find(a => !a.isWager && a.teamId === team.id)?.points,
+              id: questionAnswers.find(a => !a.isWager && a.teamId === team.id)?.id
+            });
+          });
+
+          return (
+            <ExpansionPanel key={question.id}>
+            <ExpansionPanelSummary>
+              {question.questionNumber}. Final Question
+              <Switch checked={question.isOpen} onChange={() => {handleOpenSwitchChange(question.id, !question.isOpen)}} name="checkedB" color="primary" /> 
+            </ExpansionPanelSummary>
+            {finalAnswers.map((answerSet, index) => {
+              return (
+                <ExpansionPanelDetails key={answerSet.teamName + index}>
+                  <div><b>{answerSet.teamName}:</b> <i>{answerSet.answer}</i> <br/>(Wager: {answerSet.wager})</div>
+                  {answerSet.wager && answerSet.answer && <div><TextField value={answerSet.points} style={{width:'50px', marginLeft:'20px'}} onChange={(event) => assignPoints(event.target.value, answerSet.id)}></TextField> <div style={{color: answerSet.points || answerSet.points===0 ? 'green' : 'red'}}>pts</div></div>}
+                </ExpansionPanelDetails>
+              );
+            })}
+            </ExpansionPanel>
+          );
+        }
       })}
     </div>
   );

@@ -21,9 +21,8 @@ const GameSummary = ({teams, questions, answers}) => {
     let result = [];
     
     teamIds.forEach((teamId, index) => {
-      console.log('running once')
-      let points = answers?.find(a => a.teamId === teamId && a.questionId === question.id)?.points;
-      console.log(points)
+      let points = answers?.find(a => a.teamId === teamId && a.questionId === question.id && !a.isWager)?.points;
+
       if (points === undefined) {
         points = null;
       }
@@ -34,10 +33,6 @@ const GameSummary = ({teams, questions, answers}) => {
 
     return result;
   };
-
-  useEffect(() => {
-    let sortedTotals = teamTotals.sort((a, b) => (a < b) ? 1 : -1);
-  }, [teamTotals]);
 
 
   return (

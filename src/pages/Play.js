@@ -7,6 +7,7 @@ import ScoreCard from '../components/ScoreCard';
 import Question from '../components/Question';
 import AnswerArea from '../components/AnswerArea';
 import GameSummary from '../components/GameSummary';
+import FinalQuestion from '../components/FinalQuestion';
 
 
 const Play = () => {
@@ -64,7 +65,8 @@ const Play = () => {
           questionId: doc.data().questionId,
           teamId: doc.data().teamId,
           answer: doc.data().answer,
-          points: doc.data().points
+          points: doc.data().points,
+          isWager: doc.data().isWager 
         });
       });
       setAnswers(answersArr);
@@ -92,14 +94,31 @@ const Play = () => {
     return () => unsubscribeCallback();
   }, []);
 
+  const openQuestion = questions.find(q => q.isOpen);
+  let QuestionContent = <div></div>;
+
+  if (openQuestion?.isFinalQuestion) {
+    QuestionContent = (
+      <div>
+        <FinalQuestion question={openQuestion} answers={answers.filter(a => a.teamId === id && a.questionId === openQuestion.id)} teamId={id} />
+      </div>
+    );
+  } else {
+    QuestionContent = (
+      <div>
+        <Question number={openQuestion?.questionNumber}/>
+        <AnswerArea question={openQuestion} teamId={id} answers={answers.filter(a => a.teamId === id)}/>
+      </div>
+    );
+  }
+
   return (
     <div style={{display:'flex', flexDirection:'column', alignItems:'center', padding: '20px', backgroundColor:'lightgray', paddingBottom:'10%'}}>
       <AppBar position="static">
         <span style={{padding: '10px', fontSize:'1.2em', fontWeight: 'bold'}}>Stillwater Pub Quiz - {teamData?.teamName} (team #{teamData.number})</span>
       </AppBar>
       <Paper elevation={3} style={{display:'flex', flexDirection:'column', padding: '10px', marginTop: '3vh', width:'90%'}}>
-        <Question number={questions.find(q => q.isOpen)?.questionNumber}/>
-        <AnswerArea question={questions.find(q => q.isOpen)} teamId={id} answers={answers.filter(a => a.teamId === id)}/>
+        {QuestionContent}
       </Paper>
       <Paper elevation={3} style={{display:'flex', flexDirection:'column', padding: '10px', marginTop: '3vh', width:'90%'}}>
         <ScoreCard questions={questions} answers={answers.filter(a => a.teamId === id)} />

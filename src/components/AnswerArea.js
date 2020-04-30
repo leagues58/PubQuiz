@@ -12,7 +12,7 @@ const AnswerArea = ({question, teamId, answers}) => {
       alert('You gotta put something!');
       return false;
     }
-    submitAnswer(answer, question.id, teamId);
+    submitAnswer(answer, question.id, teamId, false);
   };
 
   const answerChangeHandler = (event) => {

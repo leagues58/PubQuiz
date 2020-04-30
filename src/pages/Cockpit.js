@@ -89,7 +89,8 @@ const Cockpit = () => {
           questionId: doc.data().questionId,
           teamId: doc.data().teamId,
           answer: doc.data().answer,
-          points: doc.data().points
+          points: doc.data().points,
+          isWager: doc.data().isWager
         });
       });
       setAnswers(answersArr);
