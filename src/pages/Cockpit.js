@@ -67,7 +67,6 @@ const Cockpit = () => {
           id: doc.id, 
           question: doc.data().question, 
           isOpen: doc.data().isOpen,
-          isFinalQuestion: doc.data().isFinalQuestion,
           questionNumber: doc.data().questionNumber,
           wasAsked: doc.data().wasAsked
         });

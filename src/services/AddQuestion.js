@@ -1,13 +1,12 @@
 import firebase from '../Firebase';
 
 
-const addQuestion = async (questionText, number, isFinalQuestion) => {
+const addQuestion = async (questionText, number) => {
   const ref = await firebase.firestore()
     .collection('questions')
     .add({
       question: 'questionText2',
       isOpen: false,
-      isFinalQuestion: isFinalQuestion,
       wasAsked: false,
       questionNumber: number
     })

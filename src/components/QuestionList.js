@@ -27,7 +27,7 @@ const QuestionList = ({teams, questions, answers}) => {
   const classes = useStyles();
 
   const addQuestionHandler = () => {
-    addQuestion(`question#${questions.length+1}`, questions.length+1, false);
+    addQuestion(`question#${questions.length+1}`, questions.length+1);
   };
 
   const handleOpenSwitchChange = (questionId, state) => {
@@ -51,7 +51,7 @@ const QuestionList = ({teams, questions, answers}) => {
       </div>
       {questions.map((question) => {
         const questionAnswers = answers.filter(a => a.questionId === question.id);
-        if (!question.isFinalQuestion) {
+        if (question.questionNumber < questions.length) {
         return (
           <ExpansionPanel key={question.id}>
             <ExpansionPanelSummary
@@ -73,7 +73,6 @@ const QuestionList = ({teams, questions, answers}) => {
         );
         } else {
           let finalAnswers = [];
-          console.log('finals a' + JSON.stringify(questionAnswers))
           teams.forEach(team => {
             finalAnswers.push({
               teamName: team.teamName, 

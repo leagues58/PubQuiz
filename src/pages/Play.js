@@ -42,7 +42,6 @@ const Play = () => {
           id: doc.id, 
           question: doc.data().question, 
           isOpen: doc.data().isOpen,
-          isFinalQuestion: doc.data().isFinalQuestion,
           questionNumber: doc.data().questionNumber,
           wasAsked: doc.data().wasAsked
         });
@@ -97,7 +96,7 @@ const Play = () => {
   const openQuestion = questions.find(q => q.isOpen);
   let QuestionContent = <div></div>;
 
-  if (openQuestion?.isFinalQuestion) {
+  if (openQuestion?.questionNumber === questions.length) {
     QuestionContent = (
       <div>
         <FinalQuestion question={openQuestion} answers={answers.filter(a => a.teamId === id && a.questionId === openQuestion.id)} teamId={id} />
