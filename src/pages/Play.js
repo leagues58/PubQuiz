@@ -34,7 +34,6 @@ const Play = () => {
   useEffect(() => {
     const unsubscribeCallback = firebase.firestore()
     .collection('questions')
-    .where('wasAsked', '==', true)
     .onSnapshot((snapshot) => {
       const questionsArr = [];
       snapshot.forEach((doc) => {
@@ -120,10 +119,10 @@ const Play = () => {
         {QuestionContent}
       </Paper>
       <Paper elevation={3} style={{display:'flex', flexDirection:'column', padding: '10px', marginTop: '3vh', width:'90%'}}>
-        <ScoreCard questions={questions} answers={answers.filter(a => a.teamId === id)} />
+        <ScoreCard questions={questions.filter(q => q.wasAsked)} answers={answers.filter(a => a.teamId === id)} />
       </Paper>
       <Paper elevation={3} style={{display:'flex', flexDirection:'column', padding: '10px', marginTop: '3vh', width:'90%'}}>
-        <GameSummary teams={teams} questions={questions} answers={answers} />
+        <GameSummary teams={teams} questions={questions.filter(q => q.wasAsked)} answers={answers} />
       </Paper>
     </div>
   );
