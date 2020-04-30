@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {TextField, Button} from '@material-ui/core';
 import submitAnswer from '../services/SubmitAnswer';
-import QuestionList from './QuestionList';
 
 const FinalQuestion = ({question, answers, teamId}) => {
   const [isWager, setIsWager] = useState(true);

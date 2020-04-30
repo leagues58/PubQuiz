@@ -70,7 +70,7 @@ const LoginForm = () => {
       return false;
     }
 
-    if (data.password != teamSelectOptions.find(t => t.id === data.selectedTeam).password) {
+    if (data.password !== teamSelectOptions.find(t => t.id === data.selectedTeam).password) {
       return false;
     }
 
