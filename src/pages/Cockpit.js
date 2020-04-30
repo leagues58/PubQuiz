@@ -5,6 +5,7 @@ import TabPanel from '../components/TabPanel';
 import QuestionList from '../components/QuestionList';
 import GameSummary from '../components/GameSummary';
 import removeData from '../services/RemoveDataSet';
+import toggleCanJoinGame from '../services/ToggleCanJoinGame';
 
 
 const TeamList = ({teams}) => {
@@ -26,6 +27,7 @@ const Cockpit = () => {
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
   const [index, setTabIndex] = useState(0);
+  const [gameOpen, setGameOpen] = useState(false);
 
 
   const a11yProps = (index) => {
@@ -95,6 +97,17 @@ const Cockpit = () => {
     return () => unsubscribeCallback();
   }, []);
 
+  useEffect(() => {
+    const unsubscribeCallback = firebase.firestore()
+    .collection('settings')
+    .onSnapshot((snapshot) => {
+      snapshot.forEach((doc) => {
+        setGameOpen(doc.data().canJoinGame);
+      });
+    });
+    return () => unsubscribeCallback();
+  }, []);
+
   
 
   const handleTabChange = (event, index) => {
@@ -136,9 +149,12 @@ const Cockpit = () => {
       <TabPanel value={index} index={3}>
         <h1>Settings</h1>
         <div style={{display: 'flex', flexDirection:'column'}}>
-          <Button variant='contained' onClick={() => {handleRemoveAnswers('teams')}} style={{marginTop: '3vw'}} color='primary'>Clear Teams</Button>
-          <Button variant='contained' onClick={() => handleRemoveAnswers('answers')} style={{marginTop: '3vw'}} color='primary'>Clear Answers</Button>
-          <Button variant='contained' onClick={() => {handleRemoveAnswers('questions')}} style={{marginTop: '3vw'}} color='primary'>Clear Questions</Button>
+          <Button variant='contained' onClick={() => {toggleCanJoinGame(!gameOpen)}} style={{marginTop:'2vw'}} color='primary'>{gameOpen ? 'Close' : 'Open'} Login</Button>
+          <hr/>
+          <h2>---- Danger Zone ----</h2>
+          <Button variant='contained' onClick={() => {handleRemoveAnswers('teams')}} style={{marginTop: '1vw'}} color='primary'>Clear Teams</Button>
+          <Button variant='contained' onClick={() => handleRemoveAnswers('answers')} style={{marginTop: '2vw'}} color='primary'>Clear Answers</Button>
+          <Button variant='contained' onClick={() => {handleRemoveAnswers('questions')}} style={{marginTop: '2vw'}} color='primary'>Clear Questions</Button>
         </div>
       </TabPanel>
     </div>

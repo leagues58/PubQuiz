@@ -53,7 +53,7 @@ const QuestionList = ({teams, questions, answers}) => {
             <ExpansionPanelSummary
               expandIcon={<ExpandMoreIcon />}
               aria-controls="panel1a-content" >
-              <Typography className={classes.heading}> {question.questionNumber} ({questionAnswers.length} responses) </Typography>
+              <Typography className={classes.heading}> {question.questionNumber}. ({questionAnswers.length} responses) </Typography>
               <Switch checked={question.isOpen} onChange={() => {handleOpenSwitchChange(question.id, !question.isOpen)}} name="checkedB" color="primary" /> 
 
             </ExpansionPanelSummary>

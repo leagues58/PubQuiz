@@ -11,6 +11,7 @@ const LoginForm = () => {
   const [joinData, setJoinData] = useState({});
   const [registerData, setRegisterData] = useState({teamName: '', email: '', password: ''});
   const [registrationErrors, setRegistrationErrors] = useState(defaultValidationObject);
+  const [gameOpen, setGameOpen] = useState(false);
   const history = useHistory();
 
   useEffect(() => {
@@ -24,6 +25,17 @@ const LoginForm = () => {
     });
 
     return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const unsubscribeCallback = firebase.firestore()
+    .collection('settings')
+    .onSnapshot((snapshot) => {
+      snapshot.forEach((doc) => {
+        setGameOpen(doc.data().canJoinGame);
+      });
+    });
+    return () => unsubscribeCallback();
   }, []);
 
   const handleRegisterFormChange = (event) => {
@@ -78,13 +90,14 @@ const LoginForm = () => {
   return (
     <div style={{display: 'flex', flexDirection: 'column', alignItems:'center', justifyContent:'center', marginTop:'2vh', marginBottom:'25vh'}}>
         <Paper elevation={3} style={{padding: '30px', width:'65vmin', margin: '20px'}}>
-          <form style={{display: 'flex', flexDirection: 'column', justifyContent:'space-around'}}>
+          {!gameOpen && <div>Tonight's pub quiz has already started. Unfortunately it is too late to register a new team. You may still join one, however.</div>}
+          {gameOpen && <form style={{display: 'flex', flexDirection: 'column', justifyContent:'space-around'}}>
             <div>to form a new team, enter a team name and email:</div>
             <TextField label='team name' name='teamName' onChange={handleRegisterFormChange} style={{marginTop: '2vw'}} error={registrationErrors.teamNameError} helperText={registrationErrors.teamNameHelperText} />
             <TextField label='email address' name='email' onChange={handleRegisterFormChange} style={{marginTop: '2vw'}} error={registrationErrors.emailError} helperText={registrationErrors.emailHelperText} />
             <TextField type="password" label='team password' name='password' onChange={handleRegisterFormChange} style={{marginTop: '2vw'}} error={registrationErrors.passwordError} helperText={registrationErrors.passwordHelperText} />
             <Button variant='contained' onClick={registerTeamHandler} style={{marginTop: '3vw'}} color='primary'>register a new team!</Button>
-          </form>
+          </form>}
         </Paper>
         {teamSelectOptions.length &&
         <Paper elevation={3} style={{padding: '30px', width:'65vmin', margin: '20px'}}>
