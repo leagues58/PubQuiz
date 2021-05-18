@@ -3,7 +3,6 @@ React app made hastily over a weekend so that we can play online trivia.  App al
 questions for answering, and assign points to answers submitted.  Admins can view teams, answers, and game summaries. Users can join or
 create new teams, view and answer the open questions, and can see their scores.  
 
-The site is running at https://stillwatertrivia.com.  It's completely open, but only works when someone is actually running/managing a trivia game.
 
 # For running it locally:
 ## Available Scripts
